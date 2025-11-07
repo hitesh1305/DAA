@@ -44,7 +44,8 @@ int main() {
         cout << "Solution does not exist";
         return 0;
     }
-
+    
+    cout << "One of the possible solutions is:\n";
     printSolution(board);
     return 0;
 }

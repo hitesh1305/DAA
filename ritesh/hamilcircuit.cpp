@@ -1,51 +1,64 @@
-#include<iostream>
+#include <iostream>
 using namespace std;
 
-void HamilCircuit(int X[][25], int path[], int pos, int n) {
-    if(pos == n) {
-        if(X[path[pos - 1]][path[0]] == 1) {
-            for(int i=0;i<n;i++) 
-                cout<<path[i]<<" ";
-            cout<<path[0]<<endl;
-        }
-        return;
+#define V 5
+
+void printSolution(int path[]) {
+    cout << "Hamiltonian Cycle Found: ";
+    for (int i = 0; i < V; i++)
+        cout << path[i] << " ";
+    cout << path[0] << endl;
+}
+
+bool isSafe(int v, int graph[V][V], int path[], int pos) {
+    if (graph[path[pos - 1]][v] == 0)
+        return false;
+    for (int i = 0; i < pos; i++)
+        if (path[i] == v)
+            return false;
+    return true;
+}
+
+bool hamCycleUtil(int graph[V][V], int path[], int pos) {
+    if (pos == V) {
+        if (graph[path[pos - 1]][path[0]] == 1)
+            return true;
+        else
+            return false;
     }
-    
-    for(int v=1;v<n;v++) {
-        if(X[path[pos - 1]][v] == 1) {
-            bool found = false;
-            for(int i=0;i<n;i++) {
-                if(path[i] == v) {
-                    found = true;
-                    break;
-                }
-            }
-    
-        if(!found) {
+    for (int v = 1; v < V; v++) {
+        if (isSafe(v, graph, path, pos)) {
             path[pos] = v;
-            HamilCircuit(X, path, pos + 1, n);
+            if (hamCycleUtil(graph, path, pos + 1))
+                return true;
             path[pos] = -1;
         }
-       } 
     }
+    return false;
+}
+
+bool hamCycle(int graph[V][V]) {
+    int path[V];
+    for (int i = 0; i < V; i++)
+        path[i] = -1;
+    path[0] = 0;
+    if (hamCycleUtil(graph, path, 1) == false) {
+        cout << "No Hamiltonian Cycle exists in the given graph." << endl;
+        return false;
+    }
+    printSolution(path);
+    return true;
 }
 
 int main() {
-    int n;
-    cout<<"Enter number of vertices: ";
-    cin>>n;
-
-    int X[25][25];
-    cout<<"Enter adjacency matrix: \n";
-    for(int i=0;i<n;i++)
-        for(int j=0;j<n;j++)
-            cin>>X[i][j];
-
-    cout<<"\n Hamiltonian Circuits are: \n";
-    int path[25];
-    for(int i=0;i<n;i++)
-        path[i] = -1;
-    path[0] = 0;
-    HamilCircuit(X, path, 1, n);
+    int graph[V][V] = {
+        {0, 1, 0, 1, 0},
+        {1, 0, 1, 1, 1},
+        {0, 1, 0, 0, 1},
+        {1, 1, 0, 0, 1},
+        {0, 1, 1, 1, 0}
+    };
+    hamCycle(graph);
     return 0;
 }
+
